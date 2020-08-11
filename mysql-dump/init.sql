@@ -2,12 +2,13 @@ use whoMentionStock;
 
 CREATE TABLE `tweet` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(1000) NOT NULL DEFAULT '',
   `tweet` varchar(1000) DEFAULT NULL,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `twitter` (
+CREATE TABLE `twitter_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(1000) NOT NULL DEFAULT '',
   `last_request_time` datetime DEFAULT NULL,
@@ -25,8 +26,8 @@ CREATE TABLE `stock` (
 
 insert into stock values (NULL, "NVDA", NULL, NULL, NULL);
 insert into stock values (NULL, "TSM", "Taiwan Semiconductor Manufactur", NULL, NULL);
-insert into twitter values (NULL, "BillGates", NULL);
-insert into twitter values (NULL, "WarrenBuffett", NULL);
-insert into twitter values (NULL, "elonmusk", NULL);
-insert into twitter values (NULL, "Apple", NULL);
+insert into twitter_user values (NULL, "BillGates", NULL);
+insert into twitter_user values (NULL, "WarrenBuffett", NULL);
+insert into twitter_user values (NULL, "elonmusk", NULL);
+insert into twitter_user values (NULL, "Apple", NULL);
 commit;
