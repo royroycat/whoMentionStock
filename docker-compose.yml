@@ -1,0 +1,26 @@
+version: '3'
+services: 
+    flask-core:
+        build: .
+        depends_on: 
+            - mysql
+        ports:
+            - "80:80"
+    mysql:
+        image: mysql:5.7
+        command: --default-authentication-plugin=mysql_native_password
+        ports:
+            - "3306:3306"
+        expose:
+            - "3306"
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: yourpassword
+            MYSQL_DATABASE: whoMentionStock
+            MYSQL_USER: whoMentionStock
+            MYSQL_PASSWORD: yourpassword
+        volumes:
+            - dbdata:/var/lib/mysql
+            - ./mysql-dump:/docker-entrypoint-initdb.d
+volumes:
+    dbdata:
