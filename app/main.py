@@ -1,13 +1,27 @@
-from flask import Flask
+from flask import Flask, jsonify
 from pony.flask import Pony
+from pony.orm import *
+from pony.orm.serialization import to_dict
+from models import db, TwitterUser
+import json
+
 app = Flask(__name__)
-db = Database()
-db.bind(provider='mysql', host='127.0.0.1', user='whoMentionStock', passwd='yourpassword', db='whoMentionStock')
+db.bind(provider='mysql', 
+        host='mysql', 
+        user='whoMentionStock', 
+        passwd='yourpassword', 
+        db='whoMentionStock')
+
+db.generate_mapping(create_tables=False)
 Pony(app)
 
 @app.route("/")
 def index():
-    return "Welcome to whoMentionStock"   
+    userlist = TwitterUser.select()[:]
+    result = []
+    for p in userlist:
+        result.append(p.to_dict())
+    return jsonify(result)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=80)
