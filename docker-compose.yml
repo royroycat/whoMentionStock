@@ -24,5 +24,10 @@ services:
         volumes:
             - dbdata:/var/lib/mysql
             - ./mysql-dump:/docker-entrypoint-initdb.d
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080
 volumes:
     dbdata:

@@ -6,4 +6,5 @@ def define_entity(db):
         _table_ = "twitter_user"
         id = PrimaryKey(int, auto=True)
         username = Required(str)
+        last_request_id = Optional(int, size=64)
         last_request_time = Optional(datetime)
