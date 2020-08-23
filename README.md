@@ -15,4 +15,4 @@
 ### ADMINER
 - installed adminer for manage the program
 - ip:8080 to access your db by [ADMINER](https://www.adminer.org/)
-- the server (host) name is mysql as default (set in docker-compose.yml)
+- the server (host) name is `mysql` as default (set in docker-compose.yml)
