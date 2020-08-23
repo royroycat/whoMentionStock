@@ -11,3 +11,7 @@
 
 ### start your engine!
 `docker-compose -f docker-compose.xml up`
+
+### ADMINER
+- installed adminer for manage the program
+- ip:8080 to access your db by [ADMINER](https://www.adminer.org/)
