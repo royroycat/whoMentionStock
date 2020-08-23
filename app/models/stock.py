@@ -3,11 +3,12 @@ from datetime import datetime
 
 def define_entity(db):
     class Stock(db.Entity):
+        _table_ = "stock"
         id = PrimaryKey(int, auto=True)
         stock = Required(str)
         keywords = Optional(str)
-        last_request_id = Optional(int, size=64)
-        last_request_time = Optional(datetime)
+        last_mention_id = Optional(int, size=64)
+        last_mention_time = Optional(datetime)
 
 def get_words_list(stock):
     name = stock.stock

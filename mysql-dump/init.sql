@@ -22,9 +22,18 @@ CREATE TABLE `stock` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `stock` nvarchar(100) NOT NULL DEFAULT '',
   `keywords` text,
-  `last_request_id` bigint(64) DEFAULT NULL,
-  `last_request_time` datetime DEFAULT NULL,
+  `last_mention_id` bigint(64) DEFAULT NULL,
+  `last_mention_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
+
+CREATE TABLE `telegram_user` (
+  `chat_id` bigint(64) unsigned NOT NULL,
+  `first_name` nvarchar(100) NOT NULL DEFAULT '',
+  `last_name` nvarchar(100) NOT NULL DEFAULT '',
+  `username` nvarchar(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`chat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
 
 insert into stock values (NULL, "NVDA", NULL, NULL, NULL);

@@ -7,3 +7,5 @@ TWITTER_CONSUMER_KEY = "yourkeyhere"
 TWITTER_CONSUMER_SECRET = "yourkeyhere"
 TWITTER_ACCESS_TOKEN = "yourkeyhere"
 TWITTER_ACCESS_TOKEN_SECRET = "yourkeyhere"
+
+TELEGRAM_TOKEN = "yourtokenhere"

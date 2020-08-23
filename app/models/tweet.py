@@ -3,6 +3,7 @@ from datetime import datetime
 
 def define_entity(db):
     class Tweet(db.Entity):
+        _table_ = "tweet"
         id = PrimaryKey(int, auto=True)
         username = Required(str)
         tweet_id = Required(int, size=64)

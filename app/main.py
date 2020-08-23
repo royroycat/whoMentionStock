@@ -1,16 +1,21 @@
 import json
+import schedule
+import time
 from datetime import datetime
 from flask import Flask, jsonify, request
 from pony.flask import Pony
 from pony.orm import *
 from pony.orm.serialization import to_dict
-import tweepy
+import tweepy   
 from models import twitter_user as twitter_user_module
 from models import stock as stock_module
 from models import tweet as tweet_module
+from models import telegram_user as telegram_user_module
+from helpers import telegram_helper
+import threading
 
 app = Flask(__name__, instance_relative_config=True)
- # for ./config.py
+# for ./config.py
 app.config.from_object('config')
 # for instance/config.py, silent means missing file is ok
 app.config.from_pyfile('config.py', silent=True) 
@@ -20,6 +25,7 @@ db = Database()
 twitter_user_module.define_entity(db)
 stock_module.define_entity(db)
 tweet_module.define_entity(db)
+telegram_user_module.define_entity(db)
 db.bind(provider='mysql', 
         host=app.config["DB_HOST_NAME"],
         user=app.config["DB_USER"], 
@@ -36,14 +42,20 @@ api = tweepy.API(auth)
 # Pony
 Pony(app)
 
-@app.route("/")
-def index():
+@db_session
+def grep_mention_stock_tweets():
     # scheduler job to grep mention stock tweets
     # Step 1. loop all twitter_user
     # Step 2. get the last request id from specific user
     # Step 3. get all contents (after the last request id) from that twitter_user  
     # Step 4. scan the contents with stock ticker symbol and keywords
     # Step 5. if one is matched, save tweet in db, update stock time and send to tg
+    
+    # some printout for log
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string + " : grep_mention_stock_tweets is running...")
+
     user_list = db.TwitterUser.select()[:]
     stock_list = db.Stock.select()[:]
     for user in user_list:
@@ -57,15 +69,32 @@ def index():
             for stock in stock_list:
                  for word in stock_module.get_words_list(stock):
                     if word in status.text:
-                        with db_session:
+                            tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
+                            telegram_helper.send_message(status.user.name + " : " + tweet_date_time + " : " + status.text)
                             db.Tweet(username=status.user.name, 
                                      tweet_id=status.id, 
                                      tweet=status.text, 
                                      mention_stock=stock.stock,
-                                     datetime=datetime.now())
-                            stock.last_request_id = status.id
-                            stock.last_request_time = datetime.now()
+                                     datetime=status.created_at)
+                            stock.last_mention_id = status.id
+                            stock.last_mention_time = datetime.now()
 
+
+# Schedule Job
+schedule.every(15).minutes.do(grep_mention_stock_tweets)
+class ScheduleThread(threading.Thread):
+    def __init__(self, *pargs, **kwargs):
+        super().__init__(*pargs, daemon=True, name="scheduler", **kwargs)
+
+    def run(self):
+        while True:
+            schedule.run_pending()
+            time.sleep(schedule.idle_seconds())
+
+ScheduleThread().start()
+
+# Telegram
+telegram_helper.set_telegram_bot(pony_db=db, token=app.config["TELEGRAM_TOKEN"])
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=80)
