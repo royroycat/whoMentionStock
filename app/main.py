@@ -24,7 +24,8 @@ db.bind(provider='mysql',
         host=app.config["DB_HOST_NAME"],
         user=app.config["DB_USER"], 
         passwd=app.config["DB_PASSWORD"], 
-        db=app.config["DB_DATABASE"])
+        db=app.config["DB_DATABASE"],
+        charset='utf8mb4')
 db.generate_mapping(create_tables=False)
 
 # Tweepy
@@ -56,9 +57,14 @@ def index():
             for stock in stock_list:
                  for word in stock_module.get_words_list(stock):
                     if word in status.text:
-                        print(status.id)
-                        print(status.user.name)
-                        print(status.text)
+                        with db_session:
+                            db.Tweet(username=status.user.name, 
+                                     tweet_id=status.id, 
+                                     tweet=status.text, 
+                                     mention_stock=stock.stock,
+                                     datetime=datetime.now())
+                            stock.last_request_id = status.id
+                            stock.last_request_time = datetime.now()
 
 
 if __name__ == "__main__":

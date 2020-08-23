@@ -6,6 +6,6 @@ def define_entity(db):
         id = PrimaryKey(int, auto=True)
         username = Required(str)
         tweet_id = Required(int, size=64)
-        tweet = Optional(str)
+        tweet = Optional(unicode)
         mention_stock = Optional(str)
         datetime = Optional(datetime)
