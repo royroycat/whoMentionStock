@@ -59,7 +59,11 @@ def grep_mention_stock_tweets():
     user_list = db.TwitterUser.select()[:]
     stock_list = db.Stock.select()[:]
     for user in user_list:
-        statuses = api.user_timeline(id=user.username, count=100, since_id=user.last_request_id)
+        # if twitter user is newcomer, grep 10 tweets is ok, or bomb the telegram
+        if user.last_request_id is None: 
+            statuses = api.user_timeline(id=user.username, count=10)
+        else: 
+            statuses = api.user_timeline(id=user.username, count=100, since_id=user.last_request_id)
         user.last_request_time = datetime.now()
         for status in statuses:
             if user.last_request_id is None:
@@ -69,15 +73,16 @@ def grep_mention_stock_tweets():
             for stock in stock_list:
                  for word in stock_module.get_words_list(stock):
                     if word in status.text:
-                            tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
-                            telegram_helper.send_message(status.user.name + " : " + tweet_date_time + " : " + status.text)
-                            db.Tweet(username=status.user.name, 
-                                     tweet_id=status.id, 
-                                     tweet=status.text, 
-                                     mention_stock=stock.stock,
-                                     datetime=status.created_at)
-                            stock.last_mention_id = status.id
-                            stock.last_mention_time = datetime.now()
+                        tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
+                        telegram_helper.send_message(status.user.name + " : " + tweet_date_time + " : " + status.text)
+                        db.Tweet(username=status.user.name, 
+                                    tweet_id=status.id, 
+                                    tweet=status.text, 
+                                    mention_stock=stock.stock,
+                                    datetime=status.created_at)
+                        stock.last_mention_id = status.id
+                        stock.last_mention_time = datetime.now()
+                        continue
 
 
 # Schedule Job
