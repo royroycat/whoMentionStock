@@ -74,12 +74,18 @@ def grep_mention_stock_tweets():
                  for word in stock_module.get_words_list(stock):
                     if word in status.text:
                         tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
-                        telegram_helper.send_message(status.user.name + " : " + tweet_date_time + " : " + status.text)
-                        db.Tweet(username=status.user.name, 
-                                    tweet_id=status.id, 
-                                    tweet=status.text, 
-                                    mention_stock=stock.stock,
-                                    datetime=status.created_at)
+                        url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
+                        telegram_helper.send_message(status.user.name + " : " + 
+                                                     tweet_date_time + " : " + 
+                                                     url + " : " + 
+                                                     status.text)
+                        db.Tweet(name=status.user.name, 
+                                 screen_name=status.user.screen_name,
+                                 tweet_id=status.id, 
+                                 tweet=status.text, 
+                                 url= url,
+                                 mention_stock=stock.stock,
+                                 datetime=status.created_at)
                         stock.last_mention_id = status.id
                         stock.last_mention_time = datetime.now()
                         continue
