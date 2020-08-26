@@ -30,10 +30,14 @@ CREATE TABLE `stock` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
 
 CREATE TABLE `telegram_user` (
-  `chat_id` bigint(64) unsigned NOT NULL,
-  `first_name` nvarchar(100) NOT NULL DEFAULT '',
-  `last_name` nvarchar(100) NOT NULL DEFAULT '',
+  `chat_id` bigint(64) NOT NULL,
+  `update_id` bigint(64) NOT NULL,
+  `first_name` nvarchar(100) DEFAULT NULL,
+  `last_name` nvarchar(100) DEFAULT NULL,
   `username` nvarchar(100) DEFAULT NULL,
+  `type` nvarchar(100) DEFAULT NULL,
+  `title`nvarchar(1000) DEFAULT NULL,
+  `all_are_admin` BOOLEAN,
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`chat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;

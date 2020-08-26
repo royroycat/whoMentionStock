@@ -13,8 +13,13 @@ def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="Welcome to whoMentionBot")
     # save down the chat id afterwards
     user = db.TelegramUser(chat_id=update.effective_chat.id, 
-                           first_name=update.effective_chat.first_name, 
-                           last_name=update.effective_chat.last_name, 
+                           update_id=update.update_id,
+                           first_name=update.effective_chat.first_name or None,
+                           last_name=update.effective_chat.last_name or None,
+                           username=update.effective_chat.username or None,
+                           type=update.effective_chat.type or None,
+                           title=update.effective_chat.title or None,
+                           all_are_admin=update.effective_chat.all_members_are_administrators or None,
                            create_time=datetime.now())
     if update.effective_chat.username is not None:
         user.username = update.effective_chat.username
