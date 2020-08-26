@@ -72,7 +72,7 @@ def grep_mention_stock_tweets():
                 user.last_request_id = status.id
             for stock in stock_list:
                  for word in stock_module.get_words_list(stock):
-                    if word in status.text:
+                    if word.lower() in status.text.lower():
                         tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
                         url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
                         telegram_helper.send_message(status.user.name + " : " + 
