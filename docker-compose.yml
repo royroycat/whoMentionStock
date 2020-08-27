@@ -24,6 +24,7 @@ services:
         volumes:
             - dbdata:/var/lib/mysql
             - ./mysql-dump:/docker-entrypoint-initdb.d
+        command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
     adminer:
         image: adminer
         restart: always

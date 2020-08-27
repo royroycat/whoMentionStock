@@ -10,7 +10,7 @@ CREATE TABLE `tweet` (
   `mention_stock` nvarchar(1000) DEFAULT NULL,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE `twitter_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -18,7 +18,7 @@ CREATE TABLE `twitter_user` (
   `last_request_id` bigint(64) DEFAULT NULL,
   `last_request_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE `stock` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -27,7 +27,7 @@ CREATE TABLE `stock` (
   `last_mention_id` bigint(64) DEFAULT NULL,
   `last_mention_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE `telegram_user` (
   `chat_id` bigint(64) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE `telegram_user` (
   `all_are_admin` BOOLEAN,
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`chat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 insert into stock values (NULL, "NVDA", NULL, NULL, NULL);
 insert into stock values (NULL, "TSM", "Taiwan Semiconductor Manufactur", NULL, NULL);
