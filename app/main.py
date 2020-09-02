@@ -90,9 +90,8 @@ def grep_mention_stock_tweets():
                         stock.last_mention_time = datetime.now()
                         continue
 
-
 # Schedule Job
-schedule.every(15).minutes.do(grep_mention_stock_tweets)
+schedule.every(10).minutes.do(grep_mention_stock_tweets)
 class ScheduleThread(threading.Thread):
     def __init__(self, *pargs, **kwargs):
         super().__init__(*pargs, daemon=True, name="scheduler", **kwargs)
