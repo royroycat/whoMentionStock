@@ -76,7 +76,7 @@ def grep_mention_stock_tweets():
                     if word.lower() in status.text.lower():
                         tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
                         url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-                        combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n'
+                        combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n\n=====\n\n'
                         db.Tweet(name=status.user.name, 
                                  screen_name=status.user.screen_name,
                                  tweet_id=status.id, 
