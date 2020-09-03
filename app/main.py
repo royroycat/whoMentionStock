@@ -65,6 +65,7 @@ def grep_mention_stock_tweets():
         else: 
             statuses = api.user_timeline(id=user.username, count=100, since_id=user.last_request_id)
         user.last_request_time = datetime.now()
+        combined_message = ''
         for status in statuses:
             if user.last_request_id is None:
                 user.last_request_id = status.id
@@ -75,10 +76,7 @@ def grep_mention_stock_tweets():
                     if word.lower() in status.text.lower():
                         tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
                         url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-                        telegram_helper.send_message(status.user.name + " : " + 
-                                                     tweet_date_time + " : " + 
-                                                     url + " : " + 
-                                                     status.text)
+                        combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n'
                         db.Tweet(name=status.user.name, 
                                  screen_name=status.user.screen_name,
                                  tweet_id=status.id, 
@@ -89,9 +87,10 @@ def grep_mention_stock_tweets():
                         stock.last_mention_id = status.id
                         stock.last_mention_time = datetime.now()
                         continue
+        telegram_helper.send_message(combined_message)
 
 # Schedule Job
-schedule.every(10).minutes.do(grep_mention_stock_tweets)
+schedule.every(20).minutes.do(grep_mention_stock_tweets)
 class ScheduleThread(threading.Thread):
     def __init__(self, *pargs, **kwargs):
         super().__init__(*pargs, daemon=True, name="scheduler", **kwargs)
