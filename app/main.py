@@ -87,7 +87,8 @@ def grep_mention_stock_tweets():
                         stock.last_mention_id = status.id
                         stock.last_mention_time = datetime.now()
                         continue
-        telegram_helper.send_message(combined_message)
+        if  combined_message != '':
+            telegram_helper.send_message(combined_message)
 
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
