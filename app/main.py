@@ -58,6 +58,7 @@ def grep_mention_stock_tweets():
 
     user_list = db.TwitterUser.select()[:]
     stock_list = db.Stock.select()[:]
+    combined_message = ''
     for user in user_list:
         # if twitter user is newcomer, grep 10 tweets is ok, or bomb the telegram
         if user.last_request_id is None: 
@@ -65,7 +66,6 @@ def grep_mention_stock_tweets():
         else: 
             statuses = api.user_timeline(id=user.username, count=100, since_id=user.last_request_id)
         user.last_request_time = datetime.now()
-        combined_message = ''
         for status in statuses:
             if user.last_request_id is None:
                 user.last_request_id = status.id
@@ -87,8 +87,8 @@ def grep_mention_stock_tweets():
                         stock.last_mention_id = status.id
                         stock.last_mention_time = datetime.now()
                         continue
-        if  combined_message != '':
-            telegram_helper.send_message(combined_message)
+    if  combined_message != '':
+            telegram_helper.send_message(combined_message)    
 
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
