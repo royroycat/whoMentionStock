@@ -42,6 +42,27 @@ CREATE TABLE `telegram_user` (
   PRIMARY KEY (`chat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE `ark_trading_info` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `fund` nvarchar(100) NOT NULL DEFAULT '',
+  `date` datetime DEFAULT NULL,
+  `direction` nvarchar(100) NOT NULL DEFAULT '',
+  `ticker` nvarchar(100) DEFAULT NULL,
+  `cusip` nvarchar(100) DEFAULT NULL,
+  `company` nvarchar(1000) DEFAULT NULL,
+  `shares` decimal(38,2),
+  `etf_percent` decimal(38,6),
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+CREATE TABLE `config` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` nvarchar(1000) NOT NULL DEFAULT '',
+  `value` nvarchar(1000) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 insert into stock values (NULL, "NVDA", NULL, NULL, NULL);
 insert into stock values (NULL, "TSM", "Taiwan Semiconductor Manufactur", NULL, NULL);
 insert into stock values (NULL, "TSLA", "Tesla", NULL, NULL);

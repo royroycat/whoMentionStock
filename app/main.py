@@ -7,11 +7,13 @@ from pony.flask import Pony
 from pony.orm import *
 from pony.orm.serialization import to_dict
 import tweepy   
+from models import config as config_module
 from models import twitter_user as twitter_user_module
 from models import stock as stock_module
 from models import tweet as tweet_module
 from models import telegram_user as telegram_user_module
-from helpers import telegram_helper
+from models import ark_trading_info as ark_trading_info_module
+from helpers import telegram_helper, ark_helper
 import threading
 
 app = Flask(__name__, instance_relative_config=True)
@@ -22,10 +24,12 @@ app.config.from_pyfile('config.py', silent=True)
 
 # Database
 db = Database()
+config_module.define_entity(db)
 twitter_user_module.define_entity(db)
 stock_module.define_entity(db)
 tweet_module.define_entity(db)
 telegram_user_module.define_entity(db)
+ark_trading_info_module.define_entity(db)
 db.bind(provider='mysql', 
         host=app.config["DB_HOST_NAME"],
         user=app.config["DB_USER"], 
@@ -90,6 +94,14 @@ def grep_mention_stock_tweets():
     if  combined_message != '':
             telegram_helper.send_message(combined_message)    
 
+@db_session
+def grep_ark_email():
+    ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
+
+# ARK
+ark_helper.set_ark_helper(pony_db=db)
+grep_ark_email()
+
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
 class ScheduleThread(threading.Thread):
@@ -100,10 +112,9 @@ class ScheduleThread(threading.Thread):
         while True:
             schedule.run_pending()
             time.sleep(schedule.idle_seconds())
-
 ScheduleThread().start()
 
-# Telegram
+# Telegram, once set_telegram_bot will block the thread
 telegram_helper.set_telegram_bot(pony_db=db, token=app.config["TELEGRAM_TOKEN"])
 
 if __name__ == "__main__":

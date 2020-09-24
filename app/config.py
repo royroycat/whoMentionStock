@@ -9,3 +9,6 @@ TWITTER_ACCESS_TOKEN = "yourkeyhere"
 TWITTER_ACCESS_TOKEN_SECRET = "yourkeyhere"
 
 TELEGRAM_TOKEN = "yourtokenhere"
+
+GMAIL_ADDRESS = "youremailhere"
+GMAIL_PASSWORD = "youremailpasswordhere"

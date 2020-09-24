@@ -1,0 +1,21 @@
+from pony.orm import *
+from decimal import Decimal
+from datetime import datetime
+
+def define_entity(db):
+    class ArkTradingInfo(db.Entity):
+        _table_ = "ark_trading_info"
+        id = PrimaryKey(int, auto=True)
+        fund = Required(str)
+        date = Optional(datetime)
+        direction = Required(str)
+        ticker = Optional(str)
+        cusip = Optional(str)
+        company = Optional(str)
+        shares = Required(Decimal)
+        etf_percent = Required(Decimal)
+        create_time = Required(datetime)
+
+        @classmethod
+        def get_latest_date(cls):
+            return max(a.create_time for a in db.ArkTradingInfo)
