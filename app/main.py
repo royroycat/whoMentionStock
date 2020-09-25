@@ -92,15 +92,15 @@ def grep_mention_stock_tweets():
                         stock.last_mention_time = datetime.now()
                         continue
     if  combined_message != '':
-            telegram_helper.send_message(combined_message)    
+            telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
 
-@db_session
-def grep_ark_email():
-    ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
+#@db_session
+#def grep_ark_email():
+#    ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
 
 # ARK
-ark_helper.set_ark_helper(pony_db=db)
-grep_ark_email()
+# ark_helper.set_ark_helper(pony_db=db)
+# grep_ark_email()
 
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
