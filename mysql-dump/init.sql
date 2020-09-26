@@ -44,6 +44,7 @@ CREATE TABLE `telegram_user` (
 
 CREATE TABLE `ark_trading_info` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `daily_id` int(11) unsigned  NOT NULL,
   `fund` nvarchar(100) NOT NULL DEFAULT '',
   `date` datetime DEFAULT NULL,
   `direction` nvarchar(100) NOT NULL DEFAULT '',

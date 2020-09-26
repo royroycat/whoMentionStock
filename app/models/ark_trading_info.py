@@ -6,6 +6,7 @@ def define_entity(db):
     class ArkTradingInfo(db.Entity):
         _table_ = "ark_trading_info"
         id = PrimaryKey(int, auto=True)
+        daily_id=Required(int)
         fund = Required(str)
         date = Optional(datetime)
         direction = Required(str)

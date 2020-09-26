@@ -78,6 +78,8 @@ def grep_mention_stock_tweets():
             for stock in stock_list:
                  for word in stock_module.get_words_list(stock):
                     if word.lower() in status.text.lower():
+                        if db.Stock.select(lambda s: s.tweet_id == status.id) is not None:
+                            continue
                         tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
                         url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
                         combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n\n=====\n\n'
@@ -90,20 +92,20 @@ def grep_mention_stock_tweets():
                                  datetime=status.created_at)
                         stock.last_mention_id = status.id
                         stock.last_mention_time = datetime.now()
-                        continue
     if  combined_message != '':
             telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
 
-#@db_session
-#def grep_ark_email():
-#    ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
+@db_session
+def grep_ark_email():
+    ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
 
 # ARK
-# ark_helper.set_ark_helper(pony_db=db)
-# grep_ark_email()
+ark_helper.set_ark_helper(pony_db=db)
 
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
+schedule.every().day.at("07:00").do(grep_ark_email)
+
 class ScheduleThread(threading.Thread):
     def __init__(self, *pargs, **kwargs):
         super().__init__(*pargs, daemon=True, name="scheduler", **kwargs)
