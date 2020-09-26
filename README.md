@@ -8,6 +8,8 @@
 - mkdir instance in app folder
 - you should copy the config.py from root 
 - change the sql password, twitter token and telegram bot token 
+- add gmail address and gmail password which has subscribe ARK daily trading info
+- the gmail account must be in *Less secure apps* is ON and *IMAP* function is ON
 
 ### start your engine!
 `docker-compose -f docker-compose.xml up`
