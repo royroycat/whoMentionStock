@@ -97,6 +97,9 @@ def grep_mention_stock_tweets():
 
 @db_session
 def grep_ark_email():
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string + " : grep_ark_email is running...")
     ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
 
 # ARK
