@@ -14,15 +14,17 @@ def set_ark_helper(pony_db):
 
 def grep_email(gmail_address, password):
         # Step 1. take latest date of ARK trading info, if no then take ytd date, take all emails
-        target_date = db.ArkTradingInfo.get_latest_date() + timedelta(days=1)
+        target_date = db.ArkTradingInfo.get_latest_date()
+        if target_date is None:
+            target_date = datetime.now() - timedelta(days=3)
+        else:
+            target_date = target_date + timedelta(days=1)
         # To prevent ssl.SSLError
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         with IMAPClient(host="imap.gmail.com", ssl=True, ssl_context=context) as server:
             server.login(gmail_address, password)
             server.select_folder('INBOX', readonly=True)
             # Step 2. take the email title "ARK Investment Management Trading Information", if target_date is None, then set 3 days ago email
-            if target_date is  None:
-                target_date = datetime.now() - timedelta(days=3)
             messages = server.search(['SINCE', target_date, 'SUBJECT', 'ARK Investment Management Trading Information', 'FROM', 'ark@ark-funds.com'])
             for uid, message_data in server.fetch(messages, 'RFC822').items():
                 email_message = email.message_from_bytes(message_data[b'RFC822'])
