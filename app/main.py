@@ -68,7 +68,7 @@ def grep_mention_stock_tweets():
         if user.last_request_id is None: 
             statuses = api.user_timeline(id=user.username, count=10)
         else: 
-            statuses = api.user_timeline(id=user.username, count=100, since_id=user.last_request_id)
+            statuses = api.user_timeline(id=user.username, count=20, since_id=user.last_request_id)
         user.last_request_time = datetime.now()
         for status in statuses:
             if user.last_request_id is None:
