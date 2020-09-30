@@ -93,7 +93,7 @@ def grep_mention_stock_tweets():
                                  datetime=status.created_at)
                         stock.last_mention_id = status.id
                         stock.last_mention_time = datetime.now()
-    if  combined_message != '':
+    if combined_message != '':
             telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
 
 @db_session
@@ -102,6 +102,12 @@ def grep_ark_email():
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     print(dt_string + " : grep_ark_email is running...")
     ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
+    combined_message = ''
+    infos = ark_helper.get_matching_stock()
+    for info in infos:
+        combined_message = combined_message + info.ticker + " : " + info.direction + " : " + str(info.shares) + '\n'
+    if combined_message != '':
+        telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))  
 
 # ARK
 ark_helper.set_ark_helper(pony_db=db)

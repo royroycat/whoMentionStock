@@ -51,8 +51,13 @@ def grep_email(gmail_address, password):
                                         create_time=datetime.now())
                     rowIndex = rowIndex + 1
 
-def get_matching_stock(ticker):
-    return
+def get_matching_stock():
+    stocks = db.Stock.select()[:]
+    stock_names = []
+    for s in stocks:
+        stock_names.append(s.stock)
+    trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker in stock_names and a.date==datetime.now().date())[:]
+    return trading_infos
 
 def get_consecutive_trade(day=3):
     return
