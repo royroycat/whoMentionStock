@@ -48,53 +48,56 @@ Pony(app)
 
 @db_session
 def grep_mention_stock_tweets():
-    # scheduler job to grep mention stock tweets
-    # Step 1. loop all twitter_user
-    # Step 2. get the last request id from specific user
-    # Step 3. get all contents (after the last request id) from that twitter_user  
-    # Step 4. scan the contents with stock ticker symbol and keywords
-    # Step 5. if one is matched, save tweet in db, update stock time and send to tg
-    
-    # some printout for log
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    print(dt_string + " : grep_mention_stock_tweets is running...")
+    try:
+        # scheduler job to grep mention stock tweets
+        # Step 1. loop all twitter_user
+        # Step 2. get the last request id from specific user
+        # Step 3. get all contents (after the last request id) from that twitter_user  
+        # Step 4. scan the contents with stock ticker symbol and keywords
+        # Step 5. if one is matched, save tweet in db, update stock time and send to tg
+        
+        # some printout for log
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        print(dt_string + " : grep_mention_stock_tweets is running...")
 
-    user_list = db.TwitterUser.select()[:]
-    stock_list = db.Stock.select()[:]
-    combined_message = ''
-    for user in user_list:
-        # if twitter user is newcomer, grep 10 tweets is ok, or bomb the telegram
-        if user.last_request_id is None: 
-            statuses = api.user_timeline(id=user.username, count=10)
-        else: 
-            statuses = api.user_timeline(id=user.username, count=20, since_id=user.last_request_id)
-        user.last_request_time = datetime.now()
-        for status in statuses:
-            if user.last_request_id is None:
-                user.last_request_id = status.id
-            if status.id > user.last_request_id:
-                user.last_request_id = status.id
-            for stock in stock_list:
-                 for word in stock_module.get_words_list(stock):
-                    if word.lower() in status.text.lower():
-                        if db.Tweet.exists(lambda t: t.tweet_id == status.id) is True:
-                            continue
-                        print("Tweet inserted = " + str(status.id))
-                        tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
-                        url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-                        combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n\n=====\n\n'
-                        db.Tweet(name=status.user.name, 
-                                 screen_name=status.user.screen_name,
-                                 tweet_id=status.id, 
-                                 tweet=status.text, 
-                                 url= url,
-                                 mention_stock=stock.stock,
-                                 datetime=status.created_at)
-                        stock.last_mention_id = status.id
-                        stock.last_mention_time = datetime.now()
-    if combined_message != '':
-            telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
+        user_list = db.TwitterUser.select()[:]
+        stock_list = db.Stock.select()[:]
+        combined_message = ''
+        for user in user_list:
+            # if twitter user is newcomer, grep 10 tweets is ok, or bomb the telegram
+            if user.last_request_id is None: 
+                statuses = api.user_timeline(id=user.username, count=10)
+            else: 
+                statuses = api.user_timeline(id=user.username, count=20, since_id=user.last_request_id)
+            user.last_request_time = datetime.now()
+            for status in statuses:
+                if user.last_request_id is None:
+                    user.last_request_id = status.id
+                if status.id > user.last_request_id:
+                    user.last_request_id = status.id
+                for stock in stock_list:
+                    for word in stock_module.get_words_list(stock):
+                        if word.lower() in status.text.lower():
+                            if db.Tweet.exists(lambda t: t.tweet_id == status.id) is True:
+                                continue
+                            print("Tweet inserted = " + str(status.id))
+                            tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
+                            url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
+                            combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n\n=====\n\n'
+                            db.Tweet(name=status.user.name, 
+                                    screen_name=status.user.screen_name,
+                                    tweet_id=status.id, 
+                                    tweet=status.text, 
+                                    url= url,
+                                    mention_stock=stock.stock,
+                                    datetime=status.created_at)
+                            stock.last_mention_id = status.id
+                            stock.last_mention_time = datetime.now()
+        if combined_message != '':
+                telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
+    except:
+        pass
 
 @db_session
 def grep_ark_email():
