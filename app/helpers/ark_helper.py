@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import ssl
 import email
 from email.header import decode_header
+from collections import Counter
+from itertools import dropwhile
 
 db = None
 
@@ -60,4 +62,11 @@ def get_matching_stock():
     return trading_infos
 
 def get_consecutive_trade(day=3):
-    return
+    trading_infos = db.ArkTradingInfo.select_by_sql("select t1.* from ark_trading_info t1 inner join (SELECT distinct date FROM ark_trading_info WHERE date <= NOW() ORDER BY date desc limit $day) as t2 on t2.date = t1.date")
+    ticker_dict = {}
+    for i in trading_infos:
+        if i.ticker not in ticker_dict.keys():
+            ticker_dict[i.ticker] = []
+        ticker_dict[i.ticker].append(i)
+    specific_ticker_dict = {k:v for k,v in ticker_dict.items() if len(v) >= day}
+    return (specific_ticker_dict)

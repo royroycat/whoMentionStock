@@ -106,9 +106,19 @@ def grep_ark_email():
     print(dt_string + " : grep_ark_email is running...")
     ark_helper.grep_email(app.config["GMAIL_ADDRESS"], app.config["GMAIL_PASSWORD"])
     combined_message = ''
-    infos = ark_helper.get_matching_stock()
-    for info in infos:
-        combined_message = combined_message + info.ticker + " : " + info.direction + " : " + str(info.shares) + '\n'
+    matching_stocks = ark_helper.get_matching_stock()
+    for matching_stock in matching_stocks:
+        combined_message = combined_message + '[ARK Alert] ' + matching_stock.ticker + " : " + matching_stock.direction + " : " + str(matching_stock.shares) + '\n'
+    if combined_message != '' :
+        combined_message = combined_message + '\n=============\n'
+
+    consecutive_stock_dict = ark_helper.get_consecutive_trade()
+    for key, value in consecutive_stock_dict.items():
+        combined_message = combined_message + '[ARK Action in consecutive] ' + key + ':\n'
+        for info in value:
+            combined_message = combined_message + str(info.date) + " " + info.direction + '\n'
+        combined_message = combined_message + '\n=============\n'
+    print(combined_message)
     if combined_message != '':
         telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))  
 
