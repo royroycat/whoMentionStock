@@ -69,4 +69,4 @@ def get_consecutive_trade(day=3):
             ticker_dict[i.ticker] = []
         ticker_dict[i.ticker].append(i)
     specific_ticker_dict = {k:v for k,v in ticker_dict.items() if len(v) >= day}
-    return (specific_ticker_dict)
+    return specific_ticker_dict
