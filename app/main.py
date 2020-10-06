@@ -114,12 +114,12 @@ def grep_ark_email():
 
     consecutive_stock_dict = ark_helper.get_consecutive_trade()
     for key, value in consecutive_stock_dict.items():
-        combined_message = combined_message + f"[ARK Action in consecutive] **{key}** {value[0].company} :\n"
+        combined_message = combined_message + f"[ARK Action in consecutive] {key} ({value[0].company}) :\n"
         for info in value:
             date = info.date.strftime("%d/%m/%Y")
             combined_message += f"{date} {info.fund} {info.direction} {info.shares} {info.etf_percent}\n"
         combined_message += '\n=============\n'
-    print(combined_message)
+    print("grep_ark_email log : " + combined_message)
     if combined_message != '':
         telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))  
 
