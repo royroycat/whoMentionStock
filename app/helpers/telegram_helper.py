@@ -33,7 +33,6 @@ def command_ark_history_handler(update, context):
         ticker = "TSLA"
     print("[Command ARK History Handler] User asked for = " + ticker)
     trading_infos = ark_helper.get_ticker_history(ticker)
-    print(trading_infos)
     company = list(trading_infos)[0].company.replace('\n', ' ')
     combined_message = f"{ticker} ({company}) :\n"
     for info in trading_infos:
