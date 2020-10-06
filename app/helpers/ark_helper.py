@@ -58,7 +58,7 @@ def get_matching_stock():
     stock_names = []
     for s in stocks:
         stock_names.append(s.stock)
-    trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker in stock_names and a.date==datetime.now().date())[:]
+    trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker in stock_names and a.date == datetime.now().date())[:]
     return trading_infos
 
 def get_consecutive_trade(day=3):
@@ -70,3 +70,7 @@ def get_consecutive_trade(day=3):
         ticker_dict[i.ticker].append(i)
     specific_ticker_dict = {k:v for k,v in ticker_dict.items() if len(v) >= day}
     return specific_ticker_dict
+
+def get_ticker_history(ticker):
+    trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker==ticker and a.date >= datetime.now().date() - timedelta(days=60))
+    return trading_infos
