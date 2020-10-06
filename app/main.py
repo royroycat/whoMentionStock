@@ -84,7 +84,7 @@ def grep_mention_stock_tweets():
                             print("Tweet inserted = " + str(status.id))
                             tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
                             url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-                            combined_message = combined_message + status.user.name + " : " + tweet_date_time + " : " + url + " : " + status.text + '\n\n=====\n\n'
+                            combined_message += f"{status.user.name} : {tweet_date_time} : {url} : {status.text} \n\n=====\n\n"
                             db.Tweet(name=status.user.name, 
                                     screen_name=status.user.screen_name,
                                     tweet_id=status.id, 
@@ -108,16 +108,17 @@ def grep_ark_email():
     combined_message = ''
     matching_stocks = ark_helper.get_matching_stock()
     for matching_stock in matching_stocks:
-        combined_message = combined_message + '[ARK Alert] ' + matching_stock.ticker + " : " + matching_stock.direction + " : " + str(matching_stock.shares) + '\n'
+        combined_message += f"[ARK Alert] {matching_stock.ticker} : {matching_stock.direction} : {str(matching_stock.shares)} \n"
     if combined_message != '' :
-        combined_message = combined_message + '\n=============\n'
+        combined_message += '\n=============\n'
 
     consecutive_stock_dict = ark_helper.get_consecutive_trade()
     for key, value in consecutive_stock_dict.items():
-        combined_message = combined_message + '[ARK Action in consecutive] ' + key + ':\n'
+        combined_message = combined_message + f"[ARK Action in consecutive] **{key}** {value[0].company} :\n"
         for info in value:
-            combined_message = combined_message + str(info.date) + " " + info.direction + '\n'
-        combined_message = combined_message + '\n=============\n'
+            date = info.date.strftime("%d/%m/%Y")
+            combined_message += f"{date} {info.fund} {info.direction} {info.shares} {info.etf_percent}\n"
+        combined_message += '\n=============\n'
     print(combined_message)
     if combined_message != '':
         telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))  
