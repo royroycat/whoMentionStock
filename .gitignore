@@ -1,3 +1,4 @@
 .*
 !/.gitignore
 instance/
+docker-compose.override.yml
