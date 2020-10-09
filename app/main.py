@@ -128,7 +128,7 @@ ark_helper.set_ark_helper(pony_db=db)
 
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
-schedule.every().day.at("23:00").do(grep_ark_email)
+schedule.every().day.at("01:00").do(grep_ark_email)
 
 class ScheduleThread(threading.Thread):
     def __init__(self, *pargs, **kwargs):
