@@ -7,6 +7,7 @@ import email
 from email.header import decode_header
 from collections import Counter
 from itertools import dropwhile
+from pony.orm import *
 
 db = None
 
