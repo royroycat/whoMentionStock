@@ -17,6 +17,7 @@ def set_ark_helper(pony_db):
 def grep_email(gmail_address, password):
         # Step 1. take latest date of ARK trading info, if no then take ytd date, take all emails
         latest_date = db.ArkTradingInfo.get_latest_date()
+        email_date = None
         if latest_date is None:
             email_date = datetime.now() - timedelta(days=3)
         else:
