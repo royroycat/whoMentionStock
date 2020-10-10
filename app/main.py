@@ -99,7 +99,6 @@ def grep_mention_stock_tweets():
     except:
         pass
 
-@db_session
 def grep_ark_email():
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
