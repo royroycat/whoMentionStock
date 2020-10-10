@@ -19,4 +19,4 @@ def define_entity(db):
 
         @classmethod
         def get_latest_date(cls):
-            return max(a.create_time for a in db.ArkTradingInfo)
+            return max(a.date for a in db.ArkTradingInfo)
