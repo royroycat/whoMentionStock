@@ -59,6 +59,7 @@ def grep_email(gmail_address, password):
                                             create_time=datetime.now())
                     rowIndex = rowIndex + 1
 
+@db_session
 def get_matching_stock():
     stocks = db.Stock.select()[:]
     stock_names = []
@@ -67,6 +68,7 @@ def get_matching_stock():
     trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker in stock_names and a.date == datetime.now().date())[:]
     return trading_infos
 
+@db_session
 def get_consecutive_trade(day=3):
     trading_infos = db.ArkTradingInfo.select_by_sql("select t1.* from ark_trading_info t1 inner join (SELECT distinct date FROM ark_trading_info WHERE date <= NOW() ORDER BY date desc limit $day) as t2 on t2.date = t1.date")
     ticker_dict = {}
@@ -77,6 +79,7 @@ def get_consecutive_trade(day=3):
     specific_ticker_dict = {k:v for k,v in ticker_dict.items() if len(v) >= day}
     return specific_ticker_dict
 
+@db_session
 def get_ticker_history(ticker):
     trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker==ticker and a.date >= datetime.now().date() - timedelta(days=60))
     return trading_infos
