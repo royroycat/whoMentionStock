@@ -65,7 +65,7 @@ def get_matching_stock():
     stock_names = []
     for s in stocks:
         stock_names.append(s.stock.strip("$"))
-    trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker in stock_names and a.date == datetime.now().date())[:]
+    trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker in stock_names and (a.date == datetime.now().date() or a.date == datetime.now().date()- timedelta(days=1)))[:]
     return trading_infos
 
 @db_session
