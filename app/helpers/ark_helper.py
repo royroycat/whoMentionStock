@@ -83,3 +83,8 @@ def get_consecutive_trade(day=3):
 def get_ticker_history(ticker):
     trading_infos = db.ArkTradingInfo.select(lambda a:a.ticker==ticker and a.date >= datetime.now().date() - timedelta(days=60))
     return trading_infos
+
+@db_session
+def get_trading_info_by_date(date):
+    trading_infos = db.ArkTradingInfo.select(lambda a:a.date == date.date())
+    return trading_infos
