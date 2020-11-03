@@ -15,6 +15,7 @@ from models import telegram_user as telegram_user_module
 from models import ark_trading_info as ark_trading_info_module
 from helpers import telegram_helper, ark_helper
 import threading
+import traceback
 
 app = Flask(__name__, instance_relative_config=True)
 # for ./config.py
@@ -97,7 +98,7 @@ def grep_mention_stock_tweets():
         if combined_message != '':
                 telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
     except Exception as e:
-        print(e)
+        traceback.print_exc()
         pass
 
 def grep_ark_email():
