@@ -96,7 +96,8 @@ def grep_mention_stock_tweets():
                             stock.last_mention_time = datetime.now()
         if combined_message != '':
                 telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))    
-    except:
+    except Exception as e:
+        print(e)
         pass
 
 def grep_ark_email():
