@@ -48,8 +48,10 @@ def command_date_history_handler(update, context):
         date_string = context.args[0]
         input_date = datetime.strptime(date_string, '%d/%m/%Y')
     except IndexError: #if no input then set ytd
-        input_date = date.today() - timedelta(days=1)
-        date_string = input_date.strftime("%d/%m/%Y")
+        latest_date = db.ArkTradingInfo.get_latest_date()
+        date_string = latest_date.strftime("%d/%m/%Y")
+        input_date = datetime.strptime(date_string, '%d/%m/%Y')
+        
     print("[Command Date History Handler] User asked for = " + date_string)
     trading_infos = ark_helper.get_trading_info_by_date(input_date)
     if trading_infos:
