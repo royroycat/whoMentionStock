@@ -8,7 +8,7 @@ def define_entity(db):
         name = Required(str)
         screen_name = Required(str)
         tweet_id = Required(int, size=64)
-        tweet = Optional(unicode)
+        tweet = Optional(LongUnicode)
         url = Optional(unicode)
         mention_stock = Optional(str)
         datetime = Optional(datetime)

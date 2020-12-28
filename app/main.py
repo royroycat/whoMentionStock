@@ -68,9 +68,9 @@ def grep_mention_stock_tweets():
         for user in user_list:
             # if twitter user is newcomer, grep 10 tweets is ok, or bomb the telegram
             if user.last_request_id is None: 
-                statuses = api.user_timeline(id=user.username, count=10)
+                statuses = api.user_timeline(id=user.username, count=10, tweet_mode = 'extended')
             else: 
-                statuses = api.user_timeline(id=user.username, count=20, since_id=user.last_request_id)
+                statuses = api.user_timeline(id=user.username, count=20, since_id=user.last_request_id, tweet_mode = 'extended')
             user.last_request_time = datetime.now()
             for status in statuses:
                 if user.last_request_id is None:
@@ -79,17 +79,18 @@ def grep_mention_stock_tweets():
                     user.last_request_id = status.id
                 for stock in stock_list:
                     for word in stock_module.get_words_list(stock):
-                        if word.lower() in status.text.lower():
+                        if word.lower() in status.full_text.lower():
                             if db.Tweet.exists(lambda t: t.tweet_id == status.id) is True:
                                 continue
                             print("Tweet inserted = " + str(status.id))
                             tweet_date_time = status.created_at.strftime("%m/%d/%Y, %H:%M:%S")
                             url = "https://twitter.com/%s/status/%s" % (status.user.screen_name, status.id)
-                            combined_message += f"{status.user.name} : {tweet_date_time} : {url} : {status.text} \n\n=====\n\n"
+                            # crop the output message to 280 per tweet length to prevent to long, and cannot display in telegram
+                            combined_message += f"{status.user.name} : {tweet_date_time} : {url} : {status.full_text[:280] + ('..' if len(status.full_text) > 280 else '')} \n\n=====\n\n"
                             db.Tweet(name=status.user.name, 
                                     screen_name=status.user.screen_name,
                                     tweet_id=status.id, 
-                                    tweet=status.text, 
+                                    tweet=status.full_text, 
                                     url= url,
                                     mention_stock=stock.stock,
                                     datetime=status.created_at)
