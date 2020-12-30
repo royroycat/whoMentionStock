@@ -1,6 +1,6 @@
 version: '3'
 services: 
-    flask-core:
+    uwsgi-nginx-flask:
         build: .
         depends_on: 
             - mysql
