@@ -46,12 +46,13 @@ def grep_email(gmail_address, password):
                         buyDate =  datetime.strptime(d[2].get_text(), '%m/%d/%Y')
                         # To prevent same data duplicate insert, use buyDate to do validation
                         if buyDate.date() > latest_date.date() or latest_date is None:
-                            # ID | Fund | Date | Direction | Ticker | CUSIP | Company Shares | % of ETF
+                            # ID | Fund | Date | Direction | Ticker.Region | CUSIP | Company Shares | % of ETF
                             db.ArkTradingInfo(daily_id=int(d[0].get_text()),
                                             fund=d[1].get_text(),
                                             date=buyDate,
                                             direction=d[3].get_text(), 
-                                            ticker=d[4].get_text(), 
+                                            ticker=d[4].get_text().split(".")[0],
+                                            region=d[4].get_text().split(".")[1],
                                             cusip=d[5].get_text(),
                                             company=d[6].get_text(),
                                             shares=Decimal(d[7].get_text().replace(",", "")),

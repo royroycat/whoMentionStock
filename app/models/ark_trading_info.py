@@ -11,6 +11,7 @@ def define_entity(db):
         date = Optional(datetime)
         direction = Required(str)
         ticker = Optional(str)
+        region = Optional(str)
         cusip = Optional(str)
         company = Optional(str)
         shares = Required(Decimal)

@@ -49,6 +49,7 @@ CREATE TABLE `ark_trading_info` (
   `date` datetime DEFAULT NULL,
   `direction` nvarchar(100) NOT NULL DEFAULT '',
   `ticker` nvarchar(100) DEFAULT NULL,
+  `region` nvarchar(100) DEFAULT NULL,
   `cusip` nvarchar(100) DEFAULT NULL,
   `company` nvarchar(1000) DEFAULT NULL,
   `shares` decimal(38,2),
