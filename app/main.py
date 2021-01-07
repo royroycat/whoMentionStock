@@ -2,7 +2,8 @@ import json
 import schedule
 import time
 from datetime import datetime
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
+from flask_restful import Resource, Api
 from pony.flask import Pony
 from pony.orm import *
 from pony.orm.serialization import to_dict
@@ -14,7 +15,7 @@ from models import tweet as tweet_module
 from models import telegram_user as telegram_user_module
 from models import ark_trading_info as ark_trading_info_module
 from helpers import telegram_helper, ark_helper
-import threading
+from threading import Thread
 import traceback
 
 app = Flask(__name__, instance_relative_config=True)
@@ -42,10 +43,21 @@ db.generate_mapping(create_tables=False)
 # Tweepy
 auth = tweepy.OAuthHandler(app.config["TWITTER_CONSUMER_KEY"], app.config["TWITTER_CONSUMER_SECRET"])
 auth.set_access_token(app.config["TWITTER_ACCESS_TOKEN"], app.config["TWITTER_ACCESS_TOKEN_SECRET"])
-api = tweepy.API(auth)
+tweepy_api = tweepy.API(auth)
 
 # Pony
 Pony(app)
+
+# Flask-RESTful
+restful_api = Api(app)
+class Stock(Resource):
+    def get(self):
+        stock_list = db.Stock.select()[:]
+        array = []
+        for stock in stock_list:
+            array.append(stock.stock)
+        return jsonify(array)
+restful_api.add_resource(Stock, '/stock')
 
 @db_session
 def grep_mention_stock_tweets():
@@ -68,9 +80,9 @@ def grep_mention_stock_tweets():
         for user in user_list:
             # if twitter user is newcomer, grep 10 tweets is ok, or bomb the telegram
             if user.last_request_id is None: 
-                statuses = api.user_timeline(id=user.username, count=10, tweet_mode = 'extended')
+                statuses = tweepy_api.user_timeline(id=user.username, count=10, tweet_mode = 'extended')
             else: 
-                statuses = api.user_timeline(id=user.username, count=20, since_id=user.last_request_id, tweet_mode = 'extended')
+                statuses = tweepy_api.user_timeline(id=user.username, count=20, since_id=user.last_request_id, tweet_mode = 'extended')
             user.last_request_time = datetime.now()
             for status in statuses:
                 if user.last_request_id is None:
@@ -131,16 +143,12 @@ ark_helper.set_ark_helper(pony_db=db)
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
 schedule.every().day.at("01:00").do(grep_ark_email)
-
-class ScheduleThread(threading.Thread):
-    def __init__(self, *pargs, **kwargs):
-        super().__init__(*pargs, daemon=True, name="scheduler", **kwargs)
-
-    def run(self):
-        while True:
-            schedule.run_pending()
-            time.sleep(schedule.idle_seconds())
-ScheduleThread().start()
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)  
+t = Thread(target=run_schedule)
+t.start()
 
 # Telegram, once set_telegram_bot will block the thread
 telegram_helper.set_telegram_bot(pony_db=db, token=app.config["TELEGRAM_TOKEN"])

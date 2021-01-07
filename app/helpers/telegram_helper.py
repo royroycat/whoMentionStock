@@ -75,7 +75,6 @@ def set_telegram_bot(pony_db, token):
     dispatcher.add_handler(ticker_history_handler)
     dispatcher.add_handler(date_history_handler)
     updater.start_polling()
-    updater.idle()
 
 @db_session
 def send_message(message):
