@@ -4,10 +4,10 @@ services:
         build: .
         depends_on: 
             - mysql
-        ports:
-            - "80:80"
         links:
             - mysql
+        networks:
+            - whomentionstock_network
     mysql:
         image: mysql:5.7
         command: --default-authentication-plugin=mysql_native_password
@@ -25,10 +25,18 @@ services:
             - dbdata:/var/lib/mysql
             - ./mysql-dump:/docker-entrypoint-initdb.d
         command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+        networks:
+            - whomentionstock_network
     adminer:
         image: adminer
         restart: always
         ports:
             - 8080:8080
+        networks:
+            - whomentionstock_network
 volumes:
     dbdata:
+
+networks:
+    whomentionstock_network:
+        name: custom_whomentionstock_network

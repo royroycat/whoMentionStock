@@ -3,7 +3,7 @@ import schedule
 import time
 from datetime import datetime
 from flask import Flask, request, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from pony.flask import Pony
 from pony.orm import *
 from pony.orm.serialization import to_dict
@@ -50,14 +50,24 @@ Pony(app)
 
 # Flask-RESTful
 restful_api = Api(app)
+parser = reqparse.RequestParser()   
+parser.add_argument('msg')
 class Stock(Resource):
     def get(self):
         stock_list = db.Stock.select()[:]
         array = []
         for stock in stock_list:
-            array.append(stock.stock)
+            array.append(stock.stock.strip("$"))
         return jsonify(array)
+
+class Telegram(Resource):
+    def post(self):
+        args = parser.parse_args()
+        msg = args['msg']
+        telegram_helper.send_message(msg)
+
 restful_api.add_resource(Stock, '/stock')
+restful_api.add_resource(Telegram, '/telegram')
 
 @db_session
 def grep_mention_stock_tweets():
