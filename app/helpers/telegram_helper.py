@@ -64,16 +64,21 @@ def command_date_history_handler(update, context):
         print("command_date_history_handler log = " + combined_message)
         update.message.reply_text(combined_message)
 
+@db_session
 def command_volume_compare_handler(update, context):
+    ticker_list = []
     try:
-        ticker = context.args[0]
+        ticker_list.append(context.args[0])
     except IndexError:
-        ticker = "TSM"
-    print("[Command Volume Compare Handler] User asked for = " + ticker)
-    taHelper = TAHelper(ticker)
-    index = taHelper.run_volume_compare_percentage_index()
+        stock_list = db.Stock.select()[:]
+        for s in stock_list:
+            ticker_list.append(s.stock)
+    print("[Command Volume Compare Handler] User asked for = " + str(ticker_list)[1:-1])
     combined_message = '(CurrentVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
-    combined_message += '%s : %f%%\n' % (ticker, index)
+    for ticker in ticker_list:
+        taHelper = TAHelper(ticker)
+        index = taHelper.run_volume_compare_percentage_index()
+        combined_message += '%s : %f%%\n' % (ticker, index)
     print("command_volume_compare_handler log = " + combined_message)
     update.message.reply_text(combined_message)
 
