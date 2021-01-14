@@ -1,9 +1,12 @@
+import requests
+import traceback
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from datetime import datetime, date, timedelta
 from pony.orm import *
 import telegram
 from helpers import ark_helper
+from helpers.ta_helper import TAHelper
 
 updater = None
 dispatcher = None
@@ -61,6 +64,19 @@ def command_date_history_handler(update, context):
         print("command_date_history_handler log = " + combined_message)
         update.message.reply_text(combined_message)
 
+def command_volume_compare_handler(update, context):
+    try:
+        ticker = context.args[0]
+    except IndexError:
+        ticker = "TSM"
+    print("[Command Volume Compare Handler] User asked for = " + ticker)
+    taHelper = TAHelper(ticker)
+    index = taHelper.run_volume_compare_percentage_index()
+    combined_message = '(CurrentVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
+    combined_message += '%s : %f%%\n' % (ticker, index)
+    print("command_volume_compare_handler log = " + combined_message)
+    update.message.reply_text(combined_message)
+
 def set_telegram_bot(pony_db, token):
     global updater
     updater = Updater(token=token, use_context=True)
@@ -71,9 +87,11 @@ def set_telegram_bot(pony_db, token):
     start_handler = CommandHandler('start', start)
     ticker_history_handler = CommandHandler('ticker', command_ticker_history_handler, pass_args=True)
     date_history_handler = CommandHandler('date', command_date_history_handler, pass_args=True)
+    volume_compare_handler = CommandHandler('volumediff', command_volume_compare_handler, pass_args=True)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(ticker_history_handler)
     dispatcher.add_handler(date_history_handler)
+    dispatcher.add_handler(volume_compare_handler)
     updater.start_polling()
 
 @db_session

@@ -15,6 +15,7 @@ from models import tweet as tweet_module
 from models import telegram_user as telegram_user_module
 from models import ark_trading_info as ark_trading_info_module
 from helpers import telegram_helper, ark_helper
+from helpers.ta_helper import TAHelper
 from threading import Thread
 import traceback
 
@@ -69,6 +70,7 @@ class Telegram(Resource):
 restful_api.add_resource(Stock, '/stock')
 restful_api.add_resource(Telegram, '/telegram')
 
+# Main Function (Scheduler Task)
 @db_session
 def grep_mention_stock_tweets():
     try:
@@ -147,12 +149,27 @@ def grep_ark_email():
     if combined_message != '':
         telegram_helper.send_message(combined_message[:4090] + ('..' if len(combined_message) > 4090 else ''))  
 
+@db_session
+def run_volume_compare_percentage_index():
+    # get all stock ticker from API
+    stock_list = db.Stock.select()[:]
+    msg = '(LastDayVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
+    # create TAHelper for each ticker
+    for stock in stock_list:
+        taHelper = TAHelper(stock.stock)
+        index = taHelper.run_volume_compare_percentage_index()
+        msg += '%s : %f%%\n' % (stock.stock, index)
+    print(msg)
+    telegram_helper.send_message(msg)
+    pass
+
 # ARK
 ark_helper.set_ark_helper(pony_db=db)
 
 # Schedule Job
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
 schedule.every().day.at("01:00").do(grep_ark_email)
+schedule.every().day.at("01:01").do(run_volume_compare_percentage_index)
 def run_schedule():
     while True:
         schedule.run_pending()
