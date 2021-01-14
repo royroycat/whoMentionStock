@@ -156,9 +156,10 @@ def run_volume_compare_percentage_index():
     msg = '(LastDayVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
     # create TAHelper for each ticker
     for stock in stock_list:
-        taHelper = TAHelper(stock.stock)
+        ticker = stock.stock.strip("$")
+        taHelper = TAHelper(ticker)
         index = taHelper.run_volume_compare_percentage_index()
-        msg += '%s : %f%%\n' % (stock.stock, index)
+        msg += '%s : %f%%\n' % (ticker, index)
     print(msg)
     telegram_helper.send_message(msg)
     pass

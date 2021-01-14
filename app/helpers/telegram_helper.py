@@ -72,7 +72,7 @@ def command_volume_compare_handler(update, context):
     except IndexError:
         stock_list = db.Stock.select()[:]
         for s in stock_list:
-            ticker_list.append(s.stock)
+            ticker_list.append(s.stock.strip("$"))
     print("[Command Volume Compare Handler] User asked for = " + str(ticker_list)[1:-1])
     combined_message = '(CurrentVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
     for ticker in ticker_list:
