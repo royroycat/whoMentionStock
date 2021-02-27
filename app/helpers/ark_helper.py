@@ -29,8 +29,8 @@ def grep_email(gmail_address, password):
         with IMAPClient(host="imap.gmail.com", ssl=True, ssl_context=context) as server:
             server.login(gmail_address, password)
             server.select_folder('INBOX', readonly=True)
-            # Step 2. take the email title "ARK Investment Management Trading Information", if email_date is None, then set 3 days ago email
-            messages = server.search(['SINCE', email_date, 'SUBJECT', 'ARK Investment Management Trading Information', 'FROM', 'ark@ark-funds.com'])
+            # Step 2. take the email title "ARK Investment Management LLC – Actively Managed ETFs - Daily Trade Information*", if email_date is None, then set 3 days ago email
+            messages = server.search(['SINCE', email_date, 'SUBJECT', 'ARK Investment Management LLC – Actively Managed ETFs - Daily Trade Information*', 'FROM', 'ark@ark-funds.com'])
             for uid, message_data in server.fetch(messages, 'RFC822').items():
                 email_message = email.message_from_bytes(message_data[b'RFC822'])
                 content = email_message.get_payload(None, True)
