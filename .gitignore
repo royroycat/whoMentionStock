@@ -2,4 +2,3 @@
 !/.gitignore
 instance/
 docker-compose.override.yml
-docker-compose.debug.yml
