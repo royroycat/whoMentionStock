@@ -24,3 +24,27 @@
 - installed adminer for manage the program
 - ip:8080 to access your db by [ADMINER](https://www.adminer.org/)
 - the server (host) name is `mysql` as default (set in docker-compose.yml)
+
+### Visual Code debug
+- run the docker using `docker-compose -f docker-compose.yml -f docker-compose.debug.yml`
+- add `import debugpy` and `breakpoint()` in your python code which needed to stopped by breakpoint 
+- ```json
+{
+    "configurations": [
+        {
+           "name": "Python: Remote Attach",
+           "type": "python",
+           "request": "attach",
+           "port": 5678,
+           "host": "localhost",
+           "pathMappings": [
+               {
+                   "localRoot": "${workspaceFolder}/app",
+                   "remoteRoot": "/app"
+               }
+           ]
+       }
+}
+```
+- Add above debug config (launch.json) in VS code
+- Connect the debugger
