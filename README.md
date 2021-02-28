@@ -28,7 +28,7 @@
 ### Visual Code debug
 - run the docker using `docker-compose -f docker-compose.yml -f docker-compose.debug.yml`
 - add `import debugpy` and `breakpoint()` in your python code which needed to stopped by breakpoint 
-- ```json
+```json
 {
     "configurations": [
         {
