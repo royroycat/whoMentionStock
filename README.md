@@ -28,7 +28,7 @@
 ### Visual Code debug
 - run the docker using `docker-compose -f docker-compose.yml -f docker-compose.debug.yml`
 - add `import debugpy` and `breakpoint()` in your python code which needed to stopped by breakpoint 
-```json
+```groovy
 {
     "configurations": [
         {
@@ -45,7 +45,6 @@
            ]
        }
 }
-
 ```
 - Add above debug config (launch.json) in VS code
 - Connect the debugger
