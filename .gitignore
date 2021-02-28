@@ -2,3 +2,5 @@
 !/.gitignore
 instance/
 docker-compose.override.yml
+ark_fund_csv/*
+!ark_fund_csv/.gitkeep

@@ -8,6 +8,10 @@ from email.header import decode_header
 from collections import Counter
 from itertools import dropwhile
 from pony.orm import *
+import csv
+import requests
+import os
+
 
 db = None
 
@@ -89,3 +93,55 @@ def get_ticker_history(ticker):
 def get_trading_info_by_date(date):
     trading_infos = db.ArkTradingInfo.select(lambda a:a.date == date.date())
     return trading_infos
+
+@db_session
+def grep_ark_daily_fund_holding(ark_ticker, ark_url):
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string + " : grep_ark_daily_fund_holding is running...")
+    print(f"grep {ark_ticker} with {ark_url}")
+    csv_folder_path = "/root/whoMentionStock/ark_fund_csv"
+
+    # 1. download the csv in mounted volume
+    # 2. read the csv per fund
+    # 3. if csv date > latest record date, so it is new csv
+    # 4. save each record to sql
+
+    r = requests.get(ark_url, allow_redirects=True)
+    decoded_content = r.content.decode('utf-8')
+    csv_reader = csv.reader(decoded_content.splitlines(), delimiter=',')
+    holding_list = list(csv_reader)
+    csv_date_string = holding_list[1][0]
+    csv_datetime_obj = datetime.strptime(csv_date_string, '%m/%d/%Y')
+
+    fund_latest_date = db.ArkFundHolding.get_latest_date(ark_ticker)
+    
+    if fund_latest_date is None or csv_datetime_obj.date() > fund_latest_date.date() :
+        # save the record to db
+        for index, holding in enumerate(holding_list):
+            if (index==0):
+                continue
+            # when record is empty then stop
+            if (not holding[0]):
+                break
+            holding_date = datetime.strptime(holding[0], '%m/%d/%Y')
+            db.ArkFundHolding(daily_id=index,
+                              date=holding_date,
+                              fund=holding[1],
+                              company=holding[2],
+                              ticker=holding[3],
+                              cusip=holding[4],
+                              shares=holding[5],
+                              market_value=holding[6],
+                              weight=holding[7],
+                              create_time=datetime.now())
+        # backup the csv
+        # for folder name
+        csv_year_month_string = csv_datetime_obj.strftime("%Y%m")
+        # for csv file name
+        csv_year_month_day_string = csv_datetime_obj.strftime("%Y%m%d")
+        last_slash_position = ark_url.rfind("/")
+        csv_name = ark_url[last_slash_position+1:len(ark_url)]
+        csv_file_path = f"{csv_folder_path}/{csv_year_month_string}/{csv_name}_{csv_year_month_day_string}.csv"
+        os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
+        open(csv_file_path, "wb").write(r.content)

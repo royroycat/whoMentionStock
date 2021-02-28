@@ -58,6 +58,21 @@ CREATE TABLE `ark_trading_info` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE `ark_fund_holding` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `daily_id` int(11) unsigned  NOT NULL,
+  `date` datetime DEFAULT NULL,
+  `fund` nvarchar(100) DEFAULT NULL,
+  `company` nvarchar(1000) DEFAULT NULL,
+  `ticker` nvarchar(100) DEFAULT NULL,
+  `cusip` nvarchar(100) DEFAULT NULL,
+  `shares` decimal(38,2),
+  `market_value` decimal(38,2),
+  `weight` decimal(38,2),
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 CREATE TABLE `config` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` nvarchar(1000) NOT NULL DEFAULT '',
