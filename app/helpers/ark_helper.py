@@ -34,7 +34,7 @@ def grep_email(gmail_address, password):
             server.login(gmail_address, password)
             server.select_folder('INBOX', readonly=True)
             # Step 2. take the email title "ARK Investment Management LLC – Actively Managed ETFs - Daily Trade Information*", if email_date is None, then set 3 days ago email
-            messages = server.search(['SINCE', email_date, 'SUBJECT', 'ARK Investment Management LLC – Actively Managed ETFs - Daily Trade Information*', 'FROM', 'ark@ark-funds.com'])
+            messages = server.search(['SINCE', email_date, 'SUBJECT', u'ARK Investment Management LLC – Actively Managed ETFs - Daily Trade Information*', 'FROM', 'ark@ark-funds.com'])
             for uid, message_data in server.fetch(messages, 'RFC822').items():
                 email_message = email.message_from_bytes(message_data[b'RFC822'])
                 content = email_message.get_payload(None, True)
@@ -142,6 +142,7 @@ def grep_ark_daily_fund_holding(ark_ticker, ark_url):
         csv_year_month_day_string = csv_datetime_obj.strftime("%Y%m%d")
         last_slash_position = ark_url.rfind("/")
         csv_name = ark_url[last_slash_position+1:len(ark_url)]
-        csv_file_path = f"{csv_folder_path}/{csv_year_month_string}/{csv_name}_{csv_year_month_day_string}.csv"
+        csv_name_without_extension = csv_name.split('.')[0]
+        csv_file_path = f"{csv_folder_path}/{csv_year_month_string}/{csv_name_without_extension}_{csv_year_month_day_string}.csv"
         os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
         open(csv_file_path, "wb").write(r.content)
