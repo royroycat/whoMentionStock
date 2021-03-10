@@ -107,7 +107,9 @@ def grep_ark_daily_fund_holding(ark_ticker, ark_url):
     # 3. if csv date > latest record date, so it is new csv
     # 4. save each record to sql
 
-    r = requests.get(ark_url, allow_redirects=True)
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    r = requests.get(ark_url, allow_redirects=True, headers=headers)
+    
     decoded_content = r.content.decode('utf-8')
     csv_reader = csv.reader(decoded_content.splitlines(), delimiter=',')
     holding_list = list(csv_reader)

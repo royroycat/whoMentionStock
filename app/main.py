@@ -181,7 +181,7 @@ def grep_ark_daily_fund_holding():
 ark_helper.set_ark_helper(pony_db=db)
 
 # Schedule Job
-schedule.every(1).hours.do(grep_ark_daily_fund_holding)
+schedule.every(2).hours.do(grep_ark_daily_fund_holding)
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
 schedule.every().day.at("01:15").do(grep_ark_email)
 schedule.every().day.at("01:01").do(run_volume_compare_percentage_index)
