@@ -11,7 +11,7 @@ from pony.orm import *
 import csv
 import requests
 import os
-
+import debugpy
 
 db = None
 
@@ -21,13 +21,12 @@ def set_ark_helper(pony_db):
 
 @db_session
 def grep_email(gmail_address, password):
-        # Step 1. take latest date of ARK trading info, if no then take ytd date, take all emails
+        # Step 1. take latest date of ARK trading info, if no then take 3 days before, take all emails / if halt too long ago (>1 days), take 3 days before too
+        global latest_date
+        global all_row_index
         latest_date = db.ArkTradingInfo.get_latest_date()
-        email_date = None
-        if latest_date is None:
-            email_date = datetime.now() - timedelta(days=3)
-        else:
-            email_date = latest_date + timedelta(days=1)
+        email_date = datetime.now() - timedelta(days=3)
+
         # To prevent ssl.SSLError
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         with IMAPClient(host="imap.gmail.com", ssl=True, ssl_context=context) as server:
@@ -36,33 +35,57 @@ def grep_email(gmail_address, password):
             # Step 2. take the email title "ARK Investment Management LLC – Actively Managed ETFs - Daily Trade Information*", if email_date is None, then set 3 days ago email
             messages = server.search(['SINCE', email_date, 'SUBJECT', u'ARK Investment Management LLC Actively Managed ETFs', 'FROM', 'ark@ark-funds.com'])
             for uid, message_data in server.fetch(messages, 'RFC822').items():
+                all_row_index = 0
                 email_message = email.message_from_bytes(message_data[b'RFC822'])
                 content = email_message.get_payload(None, True)
                 soup = BeautifulSoup(content, 'html.parser')
                 # Step 3. Parse the table format into ArkTradingInfo entity
-                table = soup.find(lambda tag: tag.name=='table') 
-                rows = table.findAll(lambda tag: tag.name=='tr')
-                rowIndex = 0
-                for r in rows:
-                    if rowIndex >= 1:
-                        # grep and pass to db
-                        d = r.findAll(lambda tag: tag.name=='td')
-                        buyDate =  datetime.strptime(d[2].get_text(), '%m/%d/%Y')
-                        # To prevent same data duplicate insert, use buyDate to do validation
-                        if buyDate.date() > latest_date.date() or latest_date is None:
-                            # ID | Fund | Date | Direction | Ticker(.Region) | CUSIP | Company Shares | % of ETF
-                            db.ArkTradingInfo(daily_id=int(d[0].get_text()),
-                                            fund=d[1].get_text(),
-                                            date=buyDate,
-                                            direction=d[3].get_text(), 
-                                            ticker=d[4].get_text().split(".")[0],
-                                            region=d[4].get_text().split(".")[1] if len(d[4].get_text().split(".")) > 1 else None,
-                                            cusip=d[5].get_text(),
-                                            company=d[6].get_text(),
-                                            shares=Decimal(d[7].get_text().replace(",", "")),
-                                            etf_percent=Decimal(d[8].get_text()),
-                                            create_time=datetime.now())
-                    rowIndex = rowIndex + 1
+                grep_fund_info_from_email(soup, "ARKK ")
+                grep_fund_info_from_email(soup, "ARKQ ")
+                grep_fund_info_from_email(soup, "ARKW ")
+                grep_fund_info_from_email(soup, "ARKG ")
+                grep_fund_info_from_email(soup, "ARKF ")
+                grep_fund_info_from_email(soup, "ARKX ")
+
+@db_session
+def grep_fund_info_from_email(soup, fund_name):
+    global all_row_index
+    # find the fund table which contains data with row
+    tds= soup.find_all("td")
+    td = None
+    for this_td in tds:
+        if fund_name in this_td.contents[0]:
+            td = this_td
+            break
+    if td is None: # Catherine Wood has not trade on this fund today...
+        return
+    date_td = td.findNextSibling("td")
+    buy_date = datetime.strptime(date_td.getText(), '%m/%d/%Y')
+    fund_title_table = td.findParent("table")
+    fund_table = fund_title_table.findNextSibling("table")
+    rows = fund_table.findAll(lambda tag: tag.name=='tr')
+    row_per_fund_index = 0
+    for r in rows:
+        # row_per_fund_index == 1 is title header
+        if row_per_fund_index >= 1:
+            # grep and pass to db
+            d = r.findAll(lambda tag: tag.name=='td')
+            # To prevent same data duplicate insert, use buyDate to do validation
+            if latest_date is None or buy_date.date() > latest_date.date():
+                all_row_index = all_row_index + 1
+                # Direction | Ticker | Company Name | Shares Traded | % of Total ETF
+                db.ArkTradingInfo(daily_id=all_row_index,
+                                    fund=fund_name,
+                                    date=buy_date,
+                                    direction=d[0].getText(), 
+                                    ticker=d[1].getText(),
+                                    region=None,
+                                    cusip=None,
+                                    company=d[2].getText(),
+                                    shares=Decimal(d[3].getText().strip().split('|')[0].replace(",", "")),
+                                    etf_percent=Decimal(d[3].getText().strip().split('|')[1]),
+                                    create_time=datetime.now())
+        row_per_fund_index = row_per_fund_index + 1
 
 @db_session
 def get_matching_stock():

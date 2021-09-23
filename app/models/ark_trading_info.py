@@ -12,7 +12,7 @@ def define_entity(db):
         direction = Required(str)
         ticker = Optional(str)
         region = Optional(str, nullable=True)
-        cusip = Optional(str)
+        cusip = Optional(str, nullable=True)
         company = Optional(str)
         shares = Required(Decimal)
         etf_percent = Required(Decimal)
