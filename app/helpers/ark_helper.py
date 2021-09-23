@@ -11,7 +11,6 @@ from pony.orm import *
 import csv
 import requests
 import os
-import debugpy
 
 db = None
 
