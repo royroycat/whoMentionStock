@@ -20,11 +20,11 @@ def set_ark_helper(pony_db):
 
 @db_session
 def grep_email(gmail_address, password):
-        # Step 1. take latest date of ARK trading info, if no then take 3 days before, take all emails / if halt too long ago (>1 days), take 3 days before too
+        # Step 1. take latest date of ARK trading info, and get all ARK email before 5 days
         global latest_date
         global all_row_index
         latest_date = db.ArkTradingInfo.get_latest_date()
-        email_date = datetime.now() - timedelta(days=3)
+        email_date = datetime.now() - timedelta(days=5)
 
         # To prevent ssl.SSLError
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
