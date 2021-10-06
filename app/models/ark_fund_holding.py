@@ -12,7 +12,7 @@ def define_entity(db):
         company = Optional(str)
         ticker = Optional(str)
         cusip = Optional(str)
-        shares = Required(Decimal)
+        shares = Optional(Decimal, nullable=True)
         market_value = Required(Decimal)
         weight = Required(Decimal)
         create_time = Required(datetime)

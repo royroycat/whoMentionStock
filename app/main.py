@@ -171,9 +171,9 @@ def grep_ark_daily_fund_holding():
     ark_helper.grep_ark_daily_fund_holding("arkk", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKK_HOLDINGS.csv")
     ark_helper.grep_ark_daily_fund_holding("arkq", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKQ_HOLDINGS.csv")
     ark_helper.grep_ark_daily_fund_holding("arkw", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKW_HOLDINGS.csv")
-    ark_helper.grep_ark_daily_fund_holding("arkg", "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKG_HOLDINGS.csv")
+    ark_helper.grep_ark_daily_fund_holding("arkg", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKG_HOLDINGS.csv")
     ark_helper.grep_ark_daily_fund_holding("arkf", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKF_HOLDINGS.csv")
-    ark_helper.grep_ark_daily_fund_holding("prnt", "http://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_PRNT_HOLDINGS.csv")
+    ark_helper.grep_ark_daily_fund_holding("prnt", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_PRNT_HOLDINGS.csv")
     ark_helper.grep_ark_daily_fund_holding("izrl", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_IZRL_HOLDINGS.csv")
     ark_helper.grep_ark_daily_fund_holding("arkx", "https://ark-funds.com/wp-content/uploads/funds-etf-csv/ARK_INNOVATION_ETF_ARKX_HOLDINGS.csv")
     pass

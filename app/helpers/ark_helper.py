@@ -146,7 +146,7 @@ def grep_ark_daily_fund_holding(ark_ticker, ark_url):
             if (index==0):
                 continue
             # when record is empty then stop
-            if (not holding[0]):
+            if ("The principal risks" in holding[0]):
                 break
             holding_date = datetime.strptime(holding[0], '%m/%d/%Y')
             db.ArkFundHolding(daily_id=index,
@@ -155,9 +155,9 @@ def grep_ark_daily_fund_holding(ark_ticker, ark_url):
                               company=holding[2],
                               ticker=holding[3],
                               cusip=holding[4],
-                              shares=holding[5],
-                              market_value=holding[6],
-                              weight=holding[7],
+                              shares=holding[5].replace(",", ""),
+                              market_value=float(holding[6].replace("$", "").replace(",", "")),
+                              weight=holding[7].replace("%", ""),
                               create_time=datetime.now())
         # backup the csv
         # for folder name
