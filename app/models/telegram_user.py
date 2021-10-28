@@ -13,3 +13,4 @@ def define_entity(db):
         title = Optional(str, nullable=True)
         all_are_admin = Optional(bool, nullable=True)
         create_time = Optional(datetime)
+        can_receive_message = Required(bool, default=False)

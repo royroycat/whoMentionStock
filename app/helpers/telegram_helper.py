@@ -24,7 +24,8 @@ def start(update, context):
                            type=update.effective_chat.type or None,
                            title=update.effective_chat.title or None,
                            all_are_admin=update.effective_chat.all_members_are_administrators or None,
-                           create_time=datetime.now())
+                           create_time=datetime.now(),
+                           can_receive_message = False)
     if update.effective_chat.username is not None:
         user.username = update.effective_chat.username
 
@@ -103,4 +104,5 @@ def set_telegram_bot(pony_db, token):
 def send_message(message):
     telegram_user_list = db.TelegramUser.select()[:]
     for telegram_user in telegram_user_list:
-        updater.bot.send_message(chat_id=telegram_user.chat_id, text=message)
+        if telegram_user.can_receive_message:
+            updater.bot.send_message(chat_id=telegram_user.chat_id, text=message)

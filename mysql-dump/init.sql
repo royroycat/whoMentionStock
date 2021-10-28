@@ -39,6 +39,7 @@ CREATE TABLE `telegram_user` (
   `title`nvarchar(1000) DEFAULT NULL,
   `all_are_admin` BOOLEAN,
   `create_time` datetime DEFAULT NULL,
+  `can_receive_message` BOOLEAN,
   PRIMARY KEY (`chat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
