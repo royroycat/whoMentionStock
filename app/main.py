@@ -1,7 +1,7 @@
 import json
 import schedule
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from pony.flask import Pony
@@ -158,12 +158,33 @@ def run_volume_compare_percentage_index():
     msg = '(LastDayVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
     # create TAHelper for each ticker
     for stock in stock_list:
+        time.sleep(2)
         ticker = stock.stock.strip("$")
         taHelper = TAHelper(ticker)
         index = taHelper.run_volume_compare_percentage_index()
         msg += '%s : %f%%\n' % (ticker, index)
     print(msg)
     telegram_helper.send_message(msg)
+    pass
+
+@db_session
+def notify_earnings_calendar():
+    stock_list = db.Stock.select()[:]
+    msg = 'Earnings Date within 3 days:\n'
+    for stock in stock_list:
+        time.sleep(2)
+        ticker = stock.stock.strip("$")
+        taHelper = TAHelper(ticker)
+        calendar = taHelper.get_earnings_calendar()
+        if calendar is None:
+            continue
+        # the alert should be the 2/1/today days before the earnings date
+        time_diff = datetime.now().date() - calendar['Value'][0].date()
+        if time_diff <= timedelta(days=3) :
+            msg += '%s : %s\n' % (ticker, calendar['Value'][0].date())
+    if msg != '':
+        print(msg)
+        telegram_helper.send_message(msg)
     pass
 
 @db_session
@@ -186,6 +207,7 @@ schedule.every(2).hours.do(grep_ark_daily_fund_holding)
 schedule.every(20).minutes.do(grep_mention_stock_tweets)
 schedule.every().day.at("04:15").do(grep_ark_email)
 schedule.every().day.at("01:01").do(run_volume_compare_percentage_index)
+schedule.every().day.at("01:04").do(notify_earnings_calendar)
 def run_schedule():
     while True:
         schedule.run_pending()

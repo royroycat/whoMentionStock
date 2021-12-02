@@ -18,3 +18,16 @@ class TAHelper:
         todayVol = hist['Volume'].tail(1)
         index = ((todayVol - average21Vol) / average21Vol) * 100
         return index
+
+    def get_earnings_calendar(self):
+        calendar = self.yfObject.calendar
+        # calendars has 1 item means the earnings date is confirm 
+        # while 2 item means not yet confirm but only a date range
+        if calendar is None or len(calendar.columns) == 0:
+            return None
+        print(self.ticker)
+        print(calendar.info)
+        print(len(calendar.columns))
+        if len(calendar.columns) == 1:
+            # the alert should be the 2/1/today days before the earnings date
+            return calendar
