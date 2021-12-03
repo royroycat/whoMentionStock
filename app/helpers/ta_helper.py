@@ -28,6 +28,6 @@ class TAHelper:
         print(self.ticker)
         print(calendar.info)
         print(len(calendar.columns))
-        if len(calendar.columns) == 1:
+        if len(calendar.columns) >= 1:
             # the alert should be the 2/1/today days before the earnings date
             return calendar

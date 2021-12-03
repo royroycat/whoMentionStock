@@ -170,7 +170,7 @@ def run_volume_compare_percentage_index():
 @db_session
 def notify_earnings_calendar():
     stock_list = db.Stock.select()[:]
-    msg = 'Earnings Date within 3 days:\n'
+    msg = 'Earnings Date within coming 3 days:\n'
     for stock in stock_list:
         time.sleep(2)
         ticker = stock.stock.strip("$")
@@ -179,9 +179,17 @@ def notify_earnings_calendar():
         if calendar is None:
             continue
         # the alert should be the 2/1/today days before the earnings date
-        time_diff = datetime.now().date() - calendar['Value'][0].date()
-        if time_diff <= timedelta(days=3) :
-            msg += '%s : %s\n' % (ticker, calendar['Value'][0].date())
+        need_print = False
+        for event in calendar:
+            time_diff = calendar[event][0].date() - datetime.now().date()
+            print(time_diff)
+            if time_diff <= timedelta(days=3) :
+                need_print = True
+        if need_print:
+            date_msg = ''
+            for event in calendar:
+                date_msg += calendar[event][0].date().strftime("%d/%m/%Y") + " "
+            msg += '%s : %s\n' % (ticker, date_msg)
     if msg != '':
         print(msg)
         telegram_helper.send_message(msg)
