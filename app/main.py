@@ -183,7 +183,7 @@ def notify_earnings_calendar():
         for event in calendar:
             time_diff = calendar[event][0].date() - datetime.now().date()
             print(time_diff)
-            if time_diff <= timedelta(days=3) :
+            if time_diff <= timedelta(days=3) and time_diff >= timedelta(days=0):
                 need_print = True
         if need_print:
             date_msg = ''
