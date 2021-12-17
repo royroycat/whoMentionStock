@@ -13,11 +13,13 @@ class TAHelper:
     # If index is + and huge mean big volume buying and up
     # If index is - and huge mean big volume selling and down 
     def run_volume_compare_percentage_index(self):
+        percentChange = (self.yfObject.info['currentPrice'] - self.yfObject.info['previousClose']) / self.yfObject.info['previousClose'] * 100
+        percentChange = round(percentChange, 2)
         hist = self.yfObject.history(period="22d")
         average21Vol = hist['Volume'][:-1].mean()
         todayVol = hist['Volume'].tail(1)
         index = ((todayVol - average21Vol) / average21Vol) * 100
-        return index
+        return index, percentChange
 
     def get_earnings_calendar(self):
         calendar = self.yfObject.calendar

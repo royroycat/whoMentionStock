@@ -78,8 +78,8 @@ def command_volume_compare_handler(update, context):
     combined_message = '(CurrentVolume - 21AverageVolume) / 21AverageVolume) * 100\n==========\n'
     for ticker in ticker_list:
         taHelper = TAHelper(ticker)
-        index = taHelper.run_volume_compare_percentage_index()
-        combined_message += '%s : %f%%\n' % (ticker, index)
+        index, percentChange = taHelper.run_volume_compare_percentage_index()
+        combined_message += '%s : %f%% price:%0.2f%%\n' % (ticker, index, percentChange)
     print("command_volume_compare_handler log = " + combined_message)
     update.message.reply_text(combined_message)
 
