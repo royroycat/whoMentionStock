@@ -166,7 +166,7 @@ def grep_ark_daily_fund_holding(ark_ticker, ark_url):
         csv_year_month_day_string = csv_datetime_obj.strftime("%Y%m%d")
         last_slash_position = ark_url.rfind("/")
         csv_name = ark_url[last_slash_position+1:len(ark_url)]
-        csv_name_without_extension = csv_name.split('.')[0]
+        csv_name_without_extension = csv_name.rsplit('.', 1)[0]
         csv_file_path = f"{csv_folder_path}/{csv_year_month_string}/{csv_name_without_extension}_{csv_year_month_day_string}.csv"
         os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
         open(csv_file_path, "wb").write(r.content)
