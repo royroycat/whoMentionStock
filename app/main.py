@@ -161,7 +161,10 @@ def run_volume_compare_percentage_index():
         time.sleep(2)
         ticker = stock.stock.strip("$")
         taHelper = TAHelper(ticker)
-        index, percentChange = taHelper.run_volume_compare_percentage_index()
+        try:    
+            index, percentChange = taHelper.run_volume_compare_percentage_index()
+        except Exception:
+            continue
         msg += '%s : %f%% price:%0.2f%%\n' % (ticker, index, percentChange)
     print(msg)
     telegram_helper.send_message(msg)
